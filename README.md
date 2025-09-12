@@ -3,7 +3,7 @@ Uses recorded video file with narration to extract products mentioned in the vid
 
 # Prerequisites
 - Python 3.11 or later
-- ffmpeg
+
 
 ## Install dependencies
 
