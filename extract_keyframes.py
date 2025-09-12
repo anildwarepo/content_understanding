@@ -15,14 +15,27 @@ Outputs:
 - Extracted images in --outdir named like: <prefix>.<ms>.<ext>
 - keyframes_index.csv (all keyframes, regardless of --only_matched)
 - phrase_keyframe_map.csv (when --match_phrases is enabled)
+
+Implementation detail:
+- Frames are read with OpenCV (cv2) using CAP_PROP_POS_MSEC seeking.
 """
 import argparse
 import json
 import os
 import sys
-import subprocess
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
+
+
+try:
+    import cv2
+except Exception as e:
+    print(
+        "Error: OpenCV (cv2) is required to run this script without ffmpeg.\n"
+        "Install with: pip install opencv-python",
+        file=sys.stderr,
+    )
+    raise
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -102,11 +115,8 @@ def extract_phrase_segments(blob: Dict[str, Any]) -> List[Dict[str, Any]]:
             cur_words.append(wtext.rstrip())
             # If a word ends with a comma or period, we close the segment
             if wtext.endswith(",") or wtext.endswith("."):
-                # Clean trailing punctuation in segment text
                 joined = " ".join(cur_words).strip()
-                # Normalize spaces before punctuation introduced by tokenization
                 joined = joined.replace(" ,", ",").replace(" .", ".")
-                # Remove trailing comma/period for the human-readable segment
                 human = joined.rstrip(",.").strip()
                 segments.append({
                     "text": human,
@@ -130,25 +140,81 @@ def extract_phrase_segments(blob: Dict[str, Any]) -> List[Dict[str, Any]]:
 def nearest_keyframe(target_ms: int, keyframes: List[int]) -> int:
     return min(keyframes, key=lambda k: abs(k - target_ms))
 
-def run_ffmpeg_extract(video: Path, timestamp_ms: int, out_path: Path, quality: int, scale_width: int | None, fmt: str, dry_run: bool = False):
-    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(video), "-ss", f"{timestamp_ms/1000:.3f}", "-frames:v", "1"]
-    if scale_width:
-        vf = f"scale=w={scale_width}:h=-1:flags=bicubic"
-        cmd += ["-vf", vf]
-    if fmt.lower() in ("jpg", "jpeg"):
-        cmd += ["-q:v", str(quality)]
-    cmd.append(str(out_path))
+# --- Helpers for image saving with OpenCV ---
+
+def map_ffmpeg_q_to_jpeg_quality(q: int) -> int:
+    """
+    Map ffmpeg -q:v range [1(best)..31(worst)] to OpenCV JPEG quality [0..100].
+    We'll clamp and use a simple monotonic mapping that keeps 1->100, 31->10.
+    """
+    q = max(1, min(31, q))
+    # Linear map: 1 -> 100, 31 -> 10
+    # slope = (10 - 100) / (31 - 1) = -90/30 = -3
+    # quality = 100 + (q-1)*(-3)
+    return max(0, min(100, 100 - 3 * (q - 1)))
+
+def save_image(out_path: Path, frame, fmt: str, jpeg_q: int):
+    params = []
+    ext = fmt.lower()
+    if ext in ("jpg", "jpeg"):
+        params = [cv2.IMWRITE_JPEG_QUALITY, jpeg_q]
+    elif ext == "png":
+        # PNG compression 0 (none) .. 9 (max). Map JPEG quality inversely.
+        # Use a gentle inverse mapping: high quality -> low compression.
+        # e.g., jpeg_q 100 -> 1, 70 -> 3, 40 -> 6, <=10 -> 9
+        comp = int(round(max(0, min(9, (100 - jpeg_q) * 0.09 + 1))))
+        params = [cv2.IMWRITE_PNG_COMPRESSION, comp]
+    ok = cv2.imwrite(str(out_path), frame, params)
+    if not ok:
+        raise RuntimeError(f"Failed to write image: {out_path}")
+
+def get_frame_at_ms(cap: cv2.VideoCapture, timestamp_ms: int):
+    """
+    Seek to the requested ms and read a frame.
+    Note: Many codecs only allow accurate seeks to the nearest keyframe. This returns the closest decodable frame.
+    """
+    # Attempt time-based seek
+    cap.set(cv2.CAP_PROP_POS_MSEC, float(timestamp_ms))
+    ok, frame = cap.read()
+    if not ok or frame is None:
+        # Fallback: compute frame index by fps
+        fps = cap.get(cv2.CAP_PROP_FPS) or 0.0
+        if fps > 0:
+            frame_idx = int(round((timestamp_ms / 1000.0) * fps))
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
+            ok, frame = cap.read()
+    return frame if ok and frame is not None else None
+
+def resize_keep_aspect(frame, target_w: int | None):
+    if not target_w:
+        return frame
+    h, w = frame.shape[:2]
+    if w == target_w:
+        return frame
+    scale = target_w / float(w)
+    target_h = max(1, int(round(h * scale)))
+    return cv2.resize(frame, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
+
+def extract_and_write_frame(video: Path, timestamp_ms: int, out_path: Path, quality_q: int, scale_width: int | None, fmt: str, dry_run: bool = False):
     if dry_run:
-        print(" ".join(cmd))
+        print(f"# DRY RUN: extract frame @ {timestamp_ms} ms -> {out_path}")
         return
+
+    cap = cv2.VideoCapture(str(video))
+    if not cap.isOpened():
+        raise RuntimeError(f"Could not open video: {video}")
+
     try:
-        subprocess.run(cmd, check=True)
-    except FileNotFoundError:
-        eprint("Error: ffmpeg not found. Please install ffmpeg and ensure it's on your PATH.")
-        raise
-    except subprocess.CalledProcessError as e:
-        eprint(f"ffmpeg failed for {timestamp_ms} ms -> {out_path}: {e}")
-        raise
+        frame = get_frame_at_ms(cap, timestamp_ms)
+        if frame is None:
+            raise RuntimeError(f"Failed to read frame near {timestamp_ms} ms (timecode {ms_to_timecode(timestamp_ms)})")
+
+        # OpenCV reads in BGR; for JPEG/PNG via cv2.imwrite this is fine.
+        frame = resize_keep_aspect(frame, scale_width)
+        jpeg_q = map_ffmpeg_q_to_jpeg_quality(quality_q)
+        save_image(out_path, frame, fmt, jpeg_q)
+    finally:
+        cap.release()
 
 def main():
     ap = argparse.ArgumentParser(description="Extract images from a video at keyframe timestamps provided in JSON metadata and match transcript phrase segments to keyframes.")
@@ -157,9 +223,9 @@ def main():
     ap.add_argument("--outdir", default="keyframes", help="Output directory (default: keyframes)")
     ap.add_argument("--prefix", default="keyFrame", help="Filename prefix for extracted keyframes (default: keyFrame)")
     ap.add_argument("--format", default="jpg", choices=["jpg", "jpeg", "png"], help="Image format (default: jpg)")
-    ap.add_argument("--quality", type=int, default=2, help="JPG quality for ffmpeg -q:v (1=best, 31=worst) (default: 2)")
+    ap.add_argument("--quality", type=int, default=2, help="JPG quality compatible with ffmpeg -q:v semantics (1=best, 31=worst) (default: 2)")
     ap.add_argument("--scale_width", type=int, default=None, help="Optional output width; keeps aspect ratio")
-    ap.add_argument("--dry_run", action="store_true", help="Show ffmpeg commands without executing")
+    ap.add_argument("--dry_run", action="store_true", help="Show operations without writing images")
     ap.add_argument("--timestamps_only", action="store_true", help="Print keyframe timestamps and exit")
     ap.add_argument("--match_phrases", action="store_true", help="Create a phrase->keyframe mapping using transcript segments")
     ap.add_argument("--only_matched", action="store_true", help="If set with --match_phrases, extract only frames that were matched to phrases")
@@ -198,7 +264,6 @@ def main():
             for idx, seg in enumerate(segments, start=1):
                 start_ms = int(seg["startTimeMs"])
                 end_ms = int(seg["endTimeMs"])
-                # Use midpoint of the phrase as the anchor
                 anchor = (start_ms + end_ms) // 2
                 matched = nearest_keyframe(anchor, keyframes)
                 matched_set.add(matched)
@@ -215,17 +280,15 @@ def main():
         print(f"Wrote phrase->keyframe map: {map_csv}")
 
     # Decide which frames to actually extract
-    to_extract: List[int] = []
     if args.match_phrases and args.only_matched:
-        # Extract only the matched keyframes (unique)
-        to_extract = sorted(matched_set)
+        to_extract: List[int] = sorted(matched_set)
     else:
         to_extract = keyframes
 
     # Extract frames
     for t in to_extract:
         out_path = outdir / f"{args.prefix}.{t}.{fmt}"
-        run_ffmpeg_extract(video, t, out_path, args.quality, args.scale_width, fmt, args.dry_run)
+        extract_and_write_frame(video, t, out_path, args.quality, args.scale_width, fmt, args.dry_run)
 
     print(f"Saved {len(to_extract)} frames to {outdir}")
     print(f"All keyframes index: {csv_index}")
