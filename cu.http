@@ -1,0 +1,37 @@
+@ai_services_accountname = https://anildwa-ai-foundry-reso-resource.cognitiveservices.azure.com
+@api_key = 
+
+@analyzerId = custom_invoice_processing
+
+
+GET {{ai_services_accountname}}/contentunderstanding/analyzers?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+GET {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+
+PUT {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+< ./custom_schema.json
+
+PUT {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+< ./test_schema.json
+
+
+
+GET {{ai_services_accountname}}/contentunderstanding/analyzers/custom_invoice_processing/operations/8d18c0f6-722a-4671-9134-4af62866955f?api-version=2025-05-01-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+POST https://azure-ai-service-anildwa-9030.services.ai.azure.com/contentunderstanding/analyzers/prebuilt-documentAnalyzer:analyze?api-version=2025-05-01-preview" 
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/Azure-Samples/azure-ai-content-understanding-python/raw/refs/heads/main/data/invoice.pdf"
+}

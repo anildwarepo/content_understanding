@@ -1,0 +1,60 @@
+{
+  "description": "Invoice/receipt analyzer with extended fields",
+  "baseAnalyzerId": "prebuilt-documentAnalyzer",
+  "config": {
+    "returnDetails": true,
+    "enableFormula": false,
+    "disableContentFiltering": false,
+    "estimateFieldSourceAndConfidence": true,
+    "tableFormat": "html"
+  },
+  "fieldSchema": {
+    "fields": {
+      "vendor_name": { "type": "string", "method": "extract", "description": "Vendor or seller name" },
+      "vendor_taxid": { "type": "string", "method": "extract", "description": "Vendor tax identifier" },
+      "vendor_address": { "type": "string", "method": "extract", "description": "Vendor street address" },
+      "vendor_address_recipient": { "type": "string", "method": "extract", "description": "Recipient or attention line for the vendor address" },
+
+      "customer_name": { "type": "string", "method": "extract", "description": "Customer or buyer name" },
+      "customer_id": { "type": "string", "method": "extract", "description": "Customer account or ID" },
+      "customer_address": { "type": "string", "method": "extract", "description": "Customer street address" },
+      "customer_address_recipient": { "type": "string", "method": "extract", "description": "Recipient or attention line for the customer address" },
+
+      "shipping_address": { "type": "string", "method": "extract", "description": "Shipping street address (if different from billing)" },
+      "shipping_address_recipient": { "type": "string", "method": "extract", "description": "Recipient or attention line for the shipping address" },
+      "remittance_address_recipient": { "type": "string", "method": "extract", "description": "Remittance recipient/attention line" },
+
+      "invoice_id": { "type": "string", "method": "extract", "description": "Invoice number or identifier" },
+      "invoice_date": { "type": "date", "method": "extract", "description": "Invoice date (YYYY-MM-DD)" },
+      "due_date": { "type": "date", "method": "extract", "description": "Payment due date (YYYY-MM-DD)" },
+      "purchase_order": { "type": "string", "method": "extract", "description": "Related PO number" },
+
+      "previous_unpaid_balance": { "type": "number", "method": "extract", "description": "Balance carried forward from prior invoices" },
+      "amount": { "type": "number", "method": "extract", "description": "Line or total amount contextually extracted" },
+      "amount_due": { "type": "number", "method": "extract", "description": "Final amount due" },
+      "subtotal": { "type": "number", "method": "extract", "description": "Merchandise/services subtotal before taxes/fees" },
+      "tax": { "type": "number", "method": "extract", "description": "Tax amount (may be per-line or total depending on source)" },
+      "total_tax": { "type": "number", "method": "extract", "description": "Total tax amount" },
+      "taxrate": { "type": "number", "method": "extract", "description": "Applied tax rate (e.g., 0.07 for 7%)" },
+      "invoice_total": { "type": "number", "method": "extract", "description": "Total invoice amount (grand total)" },
+
+      "items": {
+        "type": "array",
+        "method": "extract",
+        "items": {
+          "type": "object",
+          "properties": {
+            "item_description": { "type": "string", "method": "extract", "description": "Description of the item or service" },
+            "product_code": { "type": "string", "method": "extract", "description": "Item SKU or product code" },
+            "item_date": { "type": "date", "method": "extract", "description": "Service or delivery date for the line (YYYY-MM-DD)" },
+            "item_quantity": { "type": "number", "method": "extract", "description": "Quantity for the line" },
+            "unit": { "type": "string", "method": "extract", "description": "Unit of measure (e.g., ea, hr, kg)" },
+            "unit_price": { "type": "number", "method": "extract", "description": "Price per unit" },
+            "amount": { "type": "number", "method": "extract", "description": "Extended amount for the line (qty × unit price minus discounts)" },
+            "tax": { "type": "number", "method": "extract", "description": "Tax amount for the line (if present)" }
+          }
+        }
+      }
+    }
+  }
+}

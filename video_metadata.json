@@ -1,0 +1,173 @@
+{
+	"id": "af8ee37f-f932-44d3-89c6-820f069d468c",
+	"status": "Succeeded",
+	"result": {
+		"analyzerId": "prebuilt-videoAnalyzer",
+		"apiVersion": "2025-05-01-preview",
+		"createdAt": "2025-09-11T20:23:28Z",
+		"stringEncoding": "utf8",
+		"warnings": [],
+		"contents": [
+			{
+				"markdown": "# Video: 00:00.000 => 00:21.766\nWidth: 848\nHeight: 480\n\n## Segment 1: 00:00.000 => 00:21.766\nThe video segment showcases a workspace setup featuring a Surface Laptop Studio prominently displayed on a wooden desk. A watch is placed in front of the laptop. To the right of the laptop, a large Dell 34-inch monitor is visible, displaying a vibrant image of a coastal area with boats. The setup includes a Logitech mouse on a mouse pad in front of the monitor. As the camera pans, a pair of Pose headphones is seen resting on the desk, and box speakers are positioned on a shelf above the monitor. The workspace is well-organized, with a clean and modern aesthetic.\n\nTranscript\n```\nWEBVTT\n\n00:00.640 --> 00:21.280\n<Speaker 1>Surface Laptop Studio, Watch, Dell, 34-inch monitor, Mouse, Logitech mouse, Pose headphones, box speakers, box speakers.\n```\n\nKey Frames\n- 00:00.933 ![](keyFrame.933.jpg)\n- 00:01.867 ![](keyFrame.1867.jpg)\n- 00:02.800 ![](keyFrame.2800.jpg)\n- 00:03.733 ![](keyFrame.3733.jpg)\n- 00:04.667 ![](keyFrame.4667.jpg)\n- 00:05.600 ![](keyFrame.5600.jpg)\n- 00:06.533 ![](keyFrame.6533.jpg)\n- 00:07.467 ![](keyFrame.7467.jpg)\n- 00:08.400 ![](keyFrame.8400.jpg)\n- 00:09.333 ![](keyFrame.9333.jpg)\n- 00:10.267 ![](keyFrame.10267.jpg)\n- 00:11.200 ![](keyFrame.11200.jpg)\n- 00:12.133 ![](keyFrame.12133.jpg)\n- 00:13.067 ![](keyFrame.13067.jpg)\n- 00:14.000 ![](keyFrame.14000.jpg)\n- 00:14.933 ![](keyFrame.14933.jpg)\n- 00:15.867 ![](keyFrame.15867.jpg)\n- 00:16.800 ![](keyFrame.16800.jpg)\n- 00:17.733 ![](keyFrame.17733.jpg)\n- 00:18.667 ![](keyFrame.18667.jpg)\n- 00:19.600 ![](keyFrame.19600.jpg)\n- 00:20.533 ![](keyFrame.20533.jpg)",
+				"fields": {
+					"Segments": {
+						"type": "array",
+						"valueArray": [
+							{
+								"type": "object",
+								"valueObject": {
+									"SegmentId": {
+										"type": "string",
+										"valueString": "1"
+									},
+									"StartTimeMs": {
+										"type": "integer",
+										"valueInteger": 0
+									},
+									"EndTimeMs": {
+										"type": "integer",
+										"valueInteger": 21766
+									},
+									"Description": {
+										"type": "string",
+										"valueString": "The video segment showcases a workspace setup featuring a Surface Laptop Studio prominently displayed on a wooden desk. A watch is placed in front of the laptop. To the right of the laptop, a large Dell 34-inch monitor is visible, displaying a vibrant image of a coastal area with boats. The setup includes a Logitech mouse on a mouse pad in front of the monitor. As the camera pans, a pair of Pose headphones is seen resting on the desk, and box speakers are positioned on a shelf above the monitor. The workspace is well-organized, with a clean and modern aesthetic."
+									}
+								}
+							}
+						]
+					}
+				},
+				"kind": "audioVisual",
+				"startTimeMs": 0,
+				"endTimeMs": 21766,
+				"width": 848,
+				"height": 480,
+				"KeyFrameTimesMs": [
+					933,
+					1867,
+					2800,
+					3733,
+					4667,
+					5600,
+					6533,
+					7467,
+					8400,
+					9333,
+					10267,
+					11200,
+					12133,
+					13067,
+					14000,
+					14933,
+					15867,
+					16800,
+					17733,
+					18667,
+					19600,
+					20533
+				],
+				"transcriptPhrases": [
+					{
+						"speaker": "Speaker 1",
+						"startTimeMs": 640,
+						"endTimeMs": 21280,
+						"text": "Surface Laptop Studio, Watch, Dell, 34-inch monitor, Mouse, Logitech mouse, Pose headphones, box speakers, box speakers.",
+						"confidence": 0.521,
+						"words": [
+							{
+								"startTimeMs": 640,
+								"endTimeMs": 1360,
+								"text": "Surface"
+							},
+							{
+								"startTimeMs": 1360,
+								"endTimeMs": 1760,
+								"text": "Laptop"
+							},
+							{
+								"startTimeMs": 1760,
+								"endTimeMs": 2400,
+								"text": "Studio,"
+							},
+							{
+								"startTimeMs": 3440,
+								"endTimeMs": 4000,
+								"text": "Watch,"
+							},
+							{
+								"startTimeMs": 5360,
+								"endTimeMs": 5760,
+								"text": "Dell,"
+							},
+							{
+								"startTimeMs": 7160,
+								"endTimeMs": 8000,
+								"text": "34-inch"
+							},
+							{
+								"startTimeMs": 8080,
+								"endTimeMs": 8720,
+								"text": "monitor,"
+							},
+							{
+								"startTimeMs": 10960,
+								"endTimeMs": 11440,
+								"text": "Mouse,"
+							},
+							{
+								"startTimeMs": 11520,
+								"endTimeMs": 12160,
+								"text": "Logitech"
+							},
+							{
+								"startTimeMs": 12160,
+								"endTimeMs": 12640,
+								"text": "mouse,"
+							},
+							{
+								"startTimeMs": 14680,
+								"endTimeMs": 14960,
+								"text": "Pose"
+							},
+							{
+								"startTimeMs": 15040,
+								"endTimeMs": 15840,
+								"text": "headphones,"
+							},
+							{
+								"startTimeMs": 17040,
+								"endTimeMs": 17400,
+								"text": "box"
+							},
+							{
+								"startTimeMs": 17400,
+								"endTimeMs": 18160,
+								"text": "speakers,"
+							},
+							{
+								"startTimeMs": 20400,
+								"endTimeMs": 20680,
+								"text": "box"
+							},
+							{
+								"startTimeMs": 20680,
+								"endTimeMs": 21280,
+								"text": "speakers."
+							}
+						],
+						"locale": "en-US"
+					}
+				],
+				"segments": [
+					{
+						"startTimeMs": 0,
+						"endTimeMs": 21766,
+						"description": "The video segment showcases a workspace setup featuring a Surface Laptop Studio prominently displayed on a wooden desk. A watch is placed in front of the laptop. To the right of the laptop, a large Dell 34-inch monitor is visible, displaying a vibrant image of a coastal area with boats. The setup includes a Logitech mouse on a mouse pad in front of the monitor. As the camera pans, a pair of Pose headphones is seen resting on the desk, and box speakers are positioned on a shelf above the monitor. The workspace is well-organized, with a clean and modern aesthetic.",
+						"segmentId": "1"
+					}
+				]
+			}
+		]
+	}
+}
