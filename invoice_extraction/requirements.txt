@@ -1,0 +1,4 @@
+requests
+streamlit
+opencv-python
+python-dotenv

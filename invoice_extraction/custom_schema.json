@@ -1,6 +1,6 @@
 {
   "description": "Invoice/receipt analyzer with extended fields",
-  "baseAnalyzerId": "prebuilt-documentAnalyzer",
+  "baseAnalyzerId": "prebuilt-invoice",
   "config": {
     "returnDetails": true,
     "enableFormula": false,
@@ -10,6 +10,7 @@
   },
   "fieldSchema": {
     "fields": {
+      "document_type": { "type": "string", "method": "extract", "description": "Type of document" },
       "vendor_name": { "type": "string", "method": "extract", "description": "Vendor or seller name" },
       "vendor_taxid": { "type": "string", "method": "extract", "description": "Vendor tax identifier" },
       "vendor_address": { "type": "string", "method": "extract", "description": "Vendor street address" },
@@ -31,6 +32,7 @@
 
       "previous_unpaid_balance": { "type": "number", "method": "extract", "description": "Balance carried forward from prior invoices" },
       "amount": { "type": "number", "method": "extract", "description": "Line or total amount contextually extracted" },
+      "currency": { "type": "string", "method": "extract", "description": "The Currency of the amount extracted." },
       "amount_due": { "type": "number", "method": "extract", "description": "Final amount due" },
       "subtotal": { "type": "number", "method": "extract", "description": "Merchandise/services subtotal before taxes/fees" },
       "tax": { "type": "number", "method": "extract", "description": "Tax amount (may be per-line or total depending on source)" },

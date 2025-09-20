@@ -26,7 +26,8 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Any
 
-
+UPLOADS_DIR = (Path(__file__).resolve().parent / "uploads")
+VIDEO_ANALYSIS_DIR = (Path(__file__).resolve().parent / "video_analysis_result")
 try:
     import cv2
 except Exception as e:
@@ -216,10 +217,11 @@ def extract_and_write_frame(video: Path, timestamp_ms: int, out_path: Path, qual
     finally:
         cap.release()
 
-def main():
+def run_frame_extraction(fileName: str):
+    print(f"Extracting keyframes from video: {fileName}")
     ap = argparse.ArgumentParser(description="Extract images from a video at keyframe timestamps provided in JSON metadata and match transcript phrase segments to keyframes.")
-    ap.add_argument("--video", required=True, help="Path to the video file")
-    ap.add_argument("--json", help="Path to JSON metadata file OR inline JSON string. If omitted, read from stdin.")
+    ap.add_argument("--video", help="Path to the video file", default=fileName)
+    ap.add_argument("--json", help="Path to JSON metadata file OR inline JSON string. If omitted, read from stdin.", default=f"raw_{fileName}.json")
     ap.add_argument("--outdir", default="keyframes", help="Output directory (default: keyframes)")
     ap.add_argument("--prefix", default="keyFrame", help="Filename prefix for extracted keyframes (default: keyFrame)")
     ap.add_argument("--format", default="jpg", choices=["jpg", "jpeg", "png"], help="Image format (default: jpg)")
@@ -227,15 +229,15 @@ def main():
     ap.add_argument("--scale_width", type=int, default=None, help="Optional output width; keeps aspect ratio")
     ap.add_argument("--dry_run", action="store_true", help="Show operations without writing images")
     ap.add_argument("--timestamps_only", action="store_true", help="Print keyframe timestamps and exit")
-    ap.add_argument("--match_phrases", action="store_true", help="Create a phrase->keyframe mapping using transcript segments")
+    ap.add_argument("--match_phrases", action="store_true", help="Create a phrase->keyframe mapping using transcript segments", default=True)
     ap.add_argument("--only_matched", action="store_true", help="If set with --match_phrases, extract only frames that were matched to phrases")
     args = ap.parse_args()
 
-    video = Path(args.video)
+    video = UPLOADS_DIR  / args.video
     if not video.exists():
         raise SystemExit(f"Video not found: {video}")
 
-    blob = read_json(args.json)
+    blob = read_json(VIDEO_ANALYSIS_DIR / args.json)
     keyframes = extract_keyframe_times(blob)
 
     if args.timestamps_only:
@@ -295,5 +297,6 @@ def main():
     if args.match_phrases:
         print(f"Phrase map: {outdir/'phrase_keyframe_map.csv'}")
 
+
 if __name__ == "__main__":
-    main()
+    run_frame_extraction(fileName="sample_video_with_narration.mp4")

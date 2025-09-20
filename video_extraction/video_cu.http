@@ -1,0 +1,50 @@
+@ai_services_accountname = https://azure-ai-service-anildwa-9030.services.ai.azure.com
+@api_key = 
+
+@analyzerId = product-video-auto-segmentation-analyzer
+
+@analyzerId = prebuilt-videoAnalyzer
+
+GET {{ai_services_accountname}}/contentunderstanding/analyzers?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+GET {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+
+// Create Video Analyzer with Auto Segmentation
+PUT {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+< ./video_schema-auto-segmentation.json
+
+PUT {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}?api-version=2025-05-01-preview 
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+< ./test_schema.json
+
+
+// Analyze Video with Auto Segmentation
+POST {{ai_services_accountname}}/contentunderstanding/analyzers/{{analyzerId}}:analyze?api-version=2025-05-01-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{"url":"https://stanildwa097846267954041.blob.core.windows.net/contentunderstanding/video-analysis/sample_video_with_narration.mp4"}
+
+
+GET https://azure-ai-service-anildwa-9030.services.ai.azure.com/contentunderstanding/analyzerResults/a9a3be6a-09dc-4b29-8a36-5a789060e90d?api-version=2025-05-01-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+GET {{ai_services_accountname}}/contentunderstanding/analyzers/custom_invoice_processing/operations/8d18c0f6-722a-4671-9134-4af62866955f?api-version=2025-05-01-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+POST https://azure-ai-service-anildwa-9030.services.ai.azure.com/contentunderstanding/analyzers/prebuilt-documentAnalyzer:analyze?api-version=2025-05-01-preview" 
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/Azure-Samples/azure-ai-content-understanding-python/raw/refs/heads/main/data/invoice.pdf"
+}

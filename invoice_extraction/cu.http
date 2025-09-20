@@ -1,7 +1,8 @@
-@ai_services_accountname = https://anildwa-ai-foundry-reso-resource.cognitiveservices.azure.com
+@ai_services_accountname = https://azure-ai-service-anildwa-9030.services.ai.azure.com
 @api_key = 
 
-@analyzerId = custom_invoice_processing
+@analyzerId = custom_invoice_processing_v3
+
 
 
 GET {{ai_services_accountname}}/contentunderstanding/analyzers?api-version=2025-05-01-preview 

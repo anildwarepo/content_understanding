@@ -1,0 +1,44 @@
+{
+  "description": "Sample product demo video analyzer",
+  "baseAnalyzerId": "prebuilt-videoAnalyzer",
+  "config": {
+    "locales": ["en-US", "fr-FR"],
+    "returnDetails": true,
+    "enableFace": false,
+    "disableFaceBlurring": false,
+    "personDirectoryId": null,
+    "segmentationMode": "auto",
+    "segmentationDefinition": "Product Segments divided by Products",
+    "disableContentFiltering": false
+  },
+   "fieldSchema": {
+    "fields": {
+      "Segments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "SegmentId": {
+              "type": "string"
+            },
+            "ProductName": {
+              "type": "string",
+              "method": "generate",
+              "description": "Product names mentioned in the segment"
+            },
+            "ProductDescription": {
+              "type": "string",
+              "method": "generate",
+              "description": "Descriptions of products mentioned in the segment"
+            },
+            "ProductCategory": {
+              "type": "string",
+              "method": "generate",
+              "description": "Category of products mentioned in the segment"
+            }
+          }
+        }
+      }
+    }
+  }
+}
